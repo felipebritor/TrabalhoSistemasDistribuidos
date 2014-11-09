@@ -35,6 +35,8 @@ public class Servidor {
     
     int totalPontos;
     int totalProcessors;
+    
+    
     Monitor monitor;
     Executor[] exs;
     Thread[] threads;
@@ -98,7 +100,8 @@ public class Servidor {
         
         for (int i = 0; i < totalProcessors; i++) {
             Executor ex = new Executor(i,pontos,monitor);
-            Thread th = new Thread(ex);
+            exs[i] = ex;
+            Thread th = new Thread(exs[i]);
             threads[i] = th;
             threads[i].start();
         }
@@ -107,16 +110,16 @@ public class Servidor {
     
     private void tratarProcessamento(){
         try {
-            for (Thread th : threads)  
+            for (Thread th : threads) 
                 th.join();
         } catch (InterruptedException ex) {
                 Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        }
         int tp = 0;
-        // Está dando erro aqui
         for (Executor ex : exs) {
             tp += ex.getPontosNoCirculo();
         }
+        System.out.println("TotalPontos: "+tp);
     }
     
     private Ponto[] quebrarString (String numbersString){
