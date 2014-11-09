@@ -73,8 +73,10 @@ public class Cliente {
         else if(msg.equals(EXIT)){
             displayMsg(msg,CLIENTE);
             out.println(messageBox.getText());
-            closeConnection();
-            displayMsg("Conexão fechada", CLIENTE);
+            closeConnection();        
+            frame.setVisible(false);
+            frame.dispose();
+            System.exit(0);
         }
         else if(msg.startsWith(SEND)){
             displayMsg(msg,CLIENTE);
