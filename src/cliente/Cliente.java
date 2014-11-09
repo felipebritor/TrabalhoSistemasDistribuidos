@@ -81,7 +81,7 @@ public class Cliente {
             displayMsg(msg,CLIENTE);
             String[] params = msg.split(" ");
             int n = Integer.parseInt(params[1]);
-            sendNumbers(createNumbers(n*2));
+            sendNumbers(createNumbers(n));
         }
         else
             displayMsg(msg,CLIENTE);

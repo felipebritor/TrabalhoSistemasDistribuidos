@@ -12,6 +12,7 @@ public class Executor implements Runnable{
     private Monitor mm;
     private int id;
     private int pontosNoCirculo;
+    private int pontosNoTotal;
     private Ponto[] pontos;
     
     public Executor(int id, Ponto[] pontos, Monitor monitor){
@@ -19,6 +20,7 @@ public class Executor implements Runnable{
         this.pontos = pontos;
         this.mm = monitor;
         pontosNoCirculo = 0;
+        pontosNoTotal = 0;
     }
     
     @Override
@@ -26,10 +28,11 @@ public class Executor implements Runnable{
          //synchronized (mm) {
              for (Ponto ponto : pontos) {
                  double pow = (ponto.x * ponto.x) + (ponto.y * ponto.y);
+                 pontosNoTotal++;
                  if(pow <= 1)
                      pontosNoCirculo++;
              }
-            System.out.println("Thread id "+id+": "+pontosNoCirculo);
+            System.out.println("Thread id "+id+": "+pontosNoCirculo+"/"+pontosNoTotal);
          //}
     }
     
