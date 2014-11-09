@@ -82,10 +82,7 @@ public class Cliente {
             displayMsg(msg,CLIENTE);
             String[] params = msg.split(" ");
             int n = Integer.parseInt(params[1]);
-            if(n % 2 == 0)
-                sendNumbers(createNumbers(n));
-            else
-                displayMsg("ERRO - Parametro deve ser um numero par",CLIENTE);
+            sendNumbers(createNumbers(n*2));
         }
         else
             displayMsg(msg,CLIENTE);
