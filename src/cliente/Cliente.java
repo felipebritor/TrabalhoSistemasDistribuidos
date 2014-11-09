@@ -85,25 +85,6 @@ public class Cliente {
             else
                 displayMsg("ERRO - Parametro deve ser um numero par",CLIENTE);
         }
-        /*else if(msg.startsWith("/")){
-            out.println(msg);
-      
-            displayMsg(msg,CLIENTE);
-            
-                try {
-                    // esperando a resposta.
-                    while(!in.ready()){} 
-                    // imprimindo a resposta
-                    while(in.ready()){
-                        displayMsg(in.readLine(),SERVIDOR);
-                    }
-                    
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-                }
-      
-        } */
         else
             displayMsg(msg,CLIENTE);
         
@@ -112,8 +93,13 @@ public class Cliente {
     private String createNumbers(int n){
         Random gerador = new Random();
         StringBuilder numbers = new StringBuilder();
+        float x,y;
         for (int i = 0; i < n; i++) {
-            numbers.append(gerador.nextFloat());
+            x = gerador.nextFloat();
+            y = gerador.nextFloat();
+            numbers.append(x);
+            numbers.append("-");
+            numbers.append(y);
             numbers.append(i == n-1 ? "" : ":");
 	}
         return numbers.toString();

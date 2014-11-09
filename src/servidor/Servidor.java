@@ -1,7 +1,6 @@
 package servidor;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,22 +83,26 @@ public class Servidor {
     }
     
     private void delegarTrabalho(String numbersString){
-        quebrarString(numbersString);
+        Ponto[] pontos = quebrarString(numbersString);
         
         
     }
     
-    private float[] quebrarString (String numbersString){
-        float[] numbers;
+    private Ponto[] quebrarString (String numbersString){
+        Ponto[] pontos;
         String[] numTexto = numbersString.split(" ")[1].split(":");
         int length = numTexto.length;
-        System.out.println("LENGTH: "+length);
-        numbers = new float[length];
+        
+        pontos = new Ponto[length];
+        String[] pontoString;
         for(int i = 0; i < length; i++) {
-           numbers[i] =  Float.parseFloat(numTexto[i]);
-           System.out.println(i+": "+numbers[i]);
+           pontoString = numTexto[i].split("-");
+           Ponto p = new Ponto();
+           p.x = Float.parseFloat(pontoString[0]);
+           p.y = Float.parseFloat(pontoString[1]);
+           pontos[i] = p;
         }
-        return numbers;
+        return pontos;
     } 
     
     
