@@ -23,16 +23,18 @@ public class Executor implements Runnable{
     
     @Override
     public void run() {
-         synchronized (mm) {
+         //synchronized (mm) {
              for (Ponto ponto : pontos) {
-                 float sqrt = (ponto.x * ponto.x) + (ponto.y * ponto.y);
-                 if(sqrt <= 1)
+                 float pow = (ponto.x * ponto.x) + (ponto.y * ponto.y);
+                 if(pow <= 1)
                      pontosNoCirculo++;
-                 if(mm.getStatus() == 1) //CHECAR
-                     break;
              }
-            System.out.println("Thread id"+id+": "+pontosNoCirculo);
-         }
+            System.out.println("Thread id "+id+": "+pontosNoCirculo);
+         //}
     }
     
+    
+    public int getPontosNoCirculo(){
+        return pontosNoCirculo;
+    }
 }
