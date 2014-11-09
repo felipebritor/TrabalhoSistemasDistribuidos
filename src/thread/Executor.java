@@ -25,7 +25,7 @@ public class Executor implements Runnable{
     public void run() {
          //synchronized (mm) {
              for (Ponto ponto : pontos) {
-                 float pow = (ponto.x * ponto.x) + (ponto.y * ponto.y);
+                 double pow = (ponto.x * ponto.x) + (ponto.y * ponto.y);
                  if(pow <= 1)
                      pontosNoCirculo++;
              }

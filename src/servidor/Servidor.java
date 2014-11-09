@@ -132,8 +132,8 @@ public class Servidor {
         for(int i = 0; i < length; i++) {
            pontoString = numTexto[i].split("-");
            Ponto p = new Ponto();
-           p.x = Float.parseFloat(pontoString[0]);
-           p.y = Float.parseFloat(pontoString[1]);
+           p.x = Double.parseDouble(pontoString[0]);
+           p.y = Double.parseDouble(pontoString[1]);
            pontos[i] = p;
         }
         return pontos;

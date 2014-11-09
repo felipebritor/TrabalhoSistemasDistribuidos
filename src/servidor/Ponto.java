@@ -1,6 +1,6 @@
 package servidor;
 
 public class Ponto {
-    public float x;
-    public float y;
+    public double x;
+    public double y;
 }

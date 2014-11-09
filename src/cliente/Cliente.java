@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -90,16 +89,16 @@ public class Cliente {
     }
     
     private String createNumbers(int n){
-        Random gerador = new Random();
         StringBuilder numbers = new StringBuilder();
-        float x,y;
+        double x,y;
         for (int i = 0; i < n; i++) {
-            x = gerador.nextFloat();
-            y = gerador.nextFloat();
+            x = Math.round(Math.random()*100.0)/100.0;
+            y = Math.round(Math.random()*100.0)/100.0;
             numbers.append(x);
             numbers.append("-");
             numbers.append(y);
             numbers.append(i == n-1 ? "" : ":");
+            
 	}
         return numbers.toString();
     }
