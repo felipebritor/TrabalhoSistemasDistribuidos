@@ -10,6 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import thread.Executor;
+import thread.Monitor;
 
 
 /**
@@ -31,10 +33,12 @@ public class Servidor {
     FileInputStream inFile;
     FileOutputStream outFile;
     
-    int totalThreads;
-    /**
-     * @param args the command line arguments
-     */
+    int totalPontos;
+    int totalProcessors;
+    Monitor monitor;
+    Executor[] exs;
+    Thread[] threads;
+    
     public static void main(String[] args) {
         new Servidor();
     }
@@ -43,8 +47,8 @@ public class Servidor {
         String entrada;
         boolean keep = true;
         try {
-            totalThreads = Runtime.getRuntime().availableProcessors();
-            System.out.println("Processadores: "+totalThreads);
+            totalProcessors = Runtime.getRuntime().availableProcessors();
+            System.out.println("Processadores: "+totalProcessors);
             ss = new ServerSocket(49500);
             cliente = ss.accept();
             out = new PrintWriter(cliente.getOutputStream(),true);
@@ -84,8 +88,35 @@ public class Servidor {
     
     private void delegarTrabalho(String numbersString){
         Ponto[] pontos = quebrarString(numbersString);
+        totalPontos = pontos.length;
         
+        // dividir os pontos pelas threads
         
+        monitor = new Monitor();
+        exs = new Executor[totalProcessors];
+        threads = new Thread[totalProcessors];
+        
+        for (int i = 0; i < totalProcessors; i++) {
+            Executor ex = new Executor(i,pontos,monitor);
+            Thread th = new Thread(ex);
+            threads[i] = th;
+            threads[i].start();
+        }
+        tratarProcessamento();
+    }
+    
+    private void tratarProcessamento(){
+        try {
+            for (Thread th : threads)  
+                th.join();
+        } catch (InterruptedException ex) {
+                Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        int tp = 0;
+        // Está dando erro aqui
+        for (Executor ex : exs) {
+            tp += ex.getPontosNoCirculo();
+        }
     }
     
     private Ponto[] quebrarString (String numbersString){
