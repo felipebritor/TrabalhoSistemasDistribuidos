@@ -91,9 +91,10 @@ public class Cliente {
     private String createNumbers(int n){
         StringBuilder numbers = new StringBuilder();
         double x,y;
+        double fator = 1e3;
         for (int i = 0; i < n; i++) {
-            x = Math.round(Math.random()*100.0)/100.0;
-            y = Math.round(Math.random()*100.0)/100.0;
+            x = Math.round(Math.random()*fator)/fator;
+            y = Math.round(Math.random()*fator)/fator;
             numbers.append(x);
             numbers.append("-");
             numbers.append(y);
