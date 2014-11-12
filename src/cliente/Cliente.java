@@ -1,6 +1,5 @@
 package cliente;
 
-
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -23,7 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import thread.GeradorNumeros;
+import thread.Monitor;
 
 /**
  *
@@ -34,93 +34,107 @@ public class Cliente {
     private final int SERVIDOR = 0;
     private final int CLIENTE = 1;
     private final String titulo = "AV 2";
-    
+
     private final String SEND = "/send";
     private final String CLEAR = "/clear";
     private final String EXIT = "/exit";
-    
+
     PrintWriter out;
     BufferedReader in;
     Socket s;
-    
+
     // LAYOUT
     private JTextField messageBox;
     private JButton sendBtn;
     private JTextArea displayBox;
     private JFrame frame = new JFrame(titulo);
-    
+
     public static void main(String[] args) {
         new Cliente();
     }
-    
-    public Cliente(){
-        
+
+    public Cliente() {
         String connRes = startConnection();
         setDisplay();
-        displayMsg(connRes,SERVIDOR);
-        
+        displayMsg(connRes, SERVIDOR);
+
     }
-    
-    private void messagesManager(){
+
+    private void messagesManager() {
         String msg = messageBox.getText();
-        
-        if (msg.length() < 1) {/* Não faz nada! */} 
-        else if (msg.equals(CLEAR)) {
+
+        if (msg.length() < 1) {/* Não faz nada! */
+
+        } else if (msg.equals(CLEAR)) {
             displayBox.setText("");
             messageBox.setText("");
-        }
-        else if(msg.equals(EXIT)){
-            displayMsg(msg,CLIENTE);
+        } else if (msg.equals(EXIT)) {
+            displayMsg(msg, CLIENTE);
             out.println(messageBox.getText());
-            closeConnection();        
+            closeConnection();
             frame.setVisible(false);
             frame.dispose();
             System.exit(0);
+        } else if (msg.startsWith(SEND)) {
+            displayMsg(msg, CLIENTE);
+            trataParametros(msg);
+        } else {
+            displayMsg(msg, CLIENTE);
         }
-        else if(msg.startsWith(SEND)){
-            displayMsg(msg,CLIENTE);
-            String[] params = msg.split(" ");
-            int n = Integer.parseInt(params[1]);
-            sendNumbers(createNumbers(n));
-        }
-        else
-            displayMsg(msg,CLIENTE);
-        
+
     }
-    
-    private String createNumbers(int n){
-        StringBuilder numbers = new StringBuilder();
-        double x,y;
-        double fator = 1e3;
-        for (int i = 0; i < n; i++) {
-            x = Math.round(Math.random()*fator)/fator;
-            y = Math.round(Math.random()*fator)/fator;
-            numbers.append(x);
-            numbers.append("-");
-            numbers.append(y);
-            numbers.append(i == n-1 ? "" : ":");
+
+    private void trataParametros(String cmd) {
+        String[] paramString = cmd.split(" ");
+        int vezes, pares;
+        if (paramString.length <= 1) {
+            displayMsg("ERRO - insira os parametros necessários", CLIENTE);
+        } else {
+            vezes = Integer.parseInt(paramString[1]);
+            pares = Integer.parseInt(paramString[2]);
+            gerenciadorDeEnvio(vezes, pares);
+        }
+    }
+
+    private void gerenciadorDeEnvio(int vezes, int pares) {
+        Monitor mm = new Monitor();
+        GeradorNumeros gn = new GeradorNumeros(mm, pares);
+        Thread th = new Thread(gn);
+        th.start();
+        while(true){
+            if(vezes == 0) break;
             
-	}
-        return numbers.toString();
+            try {
+                th.join();
+                sendNumbers(gn.getPacote());
+                vezes--;
+                th.run();
+                //mm.setStatus(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
     }
-    
-    private void sendNumbers (String numbers){
-        out.println("/send "+numbers);
+
+    private void sendNumbers(String pacote) {
+        out.println("/send " + pacote);
     }
-    
-    
-    private void displayMsg(String msg, int flag){
+
+    private void displayMsg(String msg, int flag) {
         String voz;
         SimpleDateFormat sdt = new SimpleDateFormat("hh:mm:ss");
         String hora = sdt.format(Calendar.getInstance().getTime());
-        if(flag == SERVIDOR)
-            voz = "<servidor - "+ hora +">: ";
-        else
-            voz = "<cliente  - "+ hora +">: ";
-        displayBox.append(voz+msg+"\n");
+        if (flag == SERVIDOR) {
+            voz = "<servidor - " + hora + ">: ";
+        } else {
+            voz = "<cliente  - " + hora + ">: ";
+        }
+        displayBox.append(voz + msg + "\n");
     }
-    
+
     private class SendBtnListener implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent event) {
             messagesManager();
@@ -128,24 +142,24 @@ public class Cliente {
             messageBox.requestFocusInWindow();
         }
     }
-    
-    private String startConnection(){
+
+    private String startConnection() {
         String connRes = "não conectado... reinicie o programa.";
-     
+
         try {
             s = new Socket("127.0.0.1", 49500);
             out = new PrintWriter(s.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             connRes = in.readLine();
-            
+
         } catch (IOException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
         return connRes;
     }
-    
-    private void closeConnection(){
-        
+
+    private void closeConnection() {
+
         try {
             out.close();
             in.close();
@@ -153,31 +167,29 @@ public class Cliente {
         } catch (IOException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
-    
-    private void setDisplay(){
+
+    private void setDisplay() {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        
+
         JPanel caixaInput = new JPanel();
         caixaInput.setLayout(new GridBagLayout());
-        
+
         messageBox = new JTextField(30);
         messageBox.requestFocusInWindow();
-        
-        
+
         sendBtn = new JButton("Enviar");
         sendBtn.addActionListener(new SendBtnListener());
-        
+
         displayBox = new JTextArea();
         displayBox.setEditable(false);
         displayBox.setFont(new Font("Droid Sans Mono", Font.PLAIN, 14));
         displayBox.setLineWrap(true);
-        
+
         panel.add(new JScrollPane(displayBox), BorderLayout.CENTER);
-        
+
         GridBagConstraints left = new GridBagConstraints();
         left.anchor = GridBagConstraints.LINE_START;
         left.fill = GridBagConstraints.HORIZONTAL;
@@ -193,17 +205,14 @@ public class Cliente {
 
         caixaInput.add(messageBox, left);
         caixaInput.add(sendBtn, right);
-        
+
         panel.add(BorderLayout.SOUTH, caixaInput);
-        
+
         frame.add(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(670, 400);
         frame.setVisible(true);
         frame.getRootPane().setDefaultButton(sendBtn);
     }
-    
+
 }
-
-
-
