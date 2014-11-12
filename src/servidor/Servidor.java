@@ -92,6 +92,8 @@ public class Servidor {
         Ponto[] pontos = quebrarString(numbersString);
         totalPontos = pontos.length;
         
+        int pontosPorThreadsLength = (int)totalPontos/totalProcessors;
+        Ponto[] pontosPorThreads;
         // dividir os pontos pelas threads
         
         monitor = new Monitor();
@@ -99,7 +101,20 @@ public class Servidor {
         threads = new Thread[totalProcessors];
         
         for (int i = 0; i < totalProcessors; i++) {
-            Executor ex = new Executor(i,pontos,monitor);
+            if(i < totalProcessors-1){
+                pontosPorThreads = new Ponto[pontosPorThreadsLength];
+                for (int k = 0; k < pontosPorThreadsLength; k++){
+                    pontosPorThreads[k] = pontos[k+i*pontosPorThreadsLength];
+                }
+            }else{
+                int pontosUltimaThread = totalPontos-(pontosPorThreadsLength*(totalProcessors-1));
+                pontosPorThreads = new Ponto[pontosUltimaThread];
+                for (int l = 0; l < pontosUltimaThread; l++){
+                    pontosPorThreads[l] = pontos[l+i*pontosPorThreadsLength];
+                }
+            }
+            
+            Executor ex = new Executor(i,pontosPorThreads,monitor);
             exs[i] = ex;
             Thread th = new Thread(exs[i]);
             threads[i] = th;
