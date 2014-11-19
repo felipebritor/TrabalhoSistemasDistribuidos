@@ -131,7 +131,7 @@ public class Servidor {
         } catch (InterruptedException ex) {
                 Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        int tp = 0;
+        double tp = 0.0;
         for (Executor ex : exs) {
             tp += ex.getPontosNoCirculo();
         }
