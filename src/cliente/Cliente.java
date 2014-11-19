@@ -22,8 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import thread.Buffer;
 import thread.GeradorNumeros;
 import thread.Monitor;
+import thread.Secretaria;
 
 /**
  *
@@ -39,8 +41,8 @@ public class Cliente {
     private final String CLEAR = "/clear";
     private final String EXIT = "/exit";
 
-    PrintWriter out;
-    BufferedReader in;
+    private PrintWriter out;
+    private BufferedReader in;
     Socket s;
 
     // LAYOUT
@@ -98,27 +100,64 @@ public class Cliente {
 
     private void gerenciadorDeEnvio(int vezes, int pares) {
         Monitor mm = new Monitor();
-        GeradorNumeros gn = new GeradorNumeros(mm, pares);
-        Thread th = new Thread(gn);
-        th.start();
+        Buffer buffer = new Buffer();
+        buffer.setVezes(vezes);
+        GeradorNumeros gn = new GeradorNumeros(buffer, pares);
+        Secretaria sec = new Secretaria(out,in,buffer);
+        
+        Thread thGerador = new Thread(gn);
+        Thread thSec = new Thread(sec);
+        
+        thGerador.start();
+        thSec.start();
+        
+        try {
+            thGerador.join();
+            thSec.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        tratarRecebimento(sec.getRecebido());
+        /*
         while(true){
             if(vezes == 0) break;
-            
+            System.out.println("Vezes: "+vezes);
             try {
-                th.join();
-                sendNumbers(gn.getPacote());
+                thGerador.join();
+                //sendNumbers(gn.getPacote());
+                sec.setPacote(gn.getPacote());
+                thSec.run();
                 vezes--;
-                th.run();
-                //mm.setStatus(1);
+                thGerador.run();
+                thSec.join();
+                System.out.println(sec.getRecebido());
+                tratarRecebimento(sec.getRecebido());
+                
             } catch (InterruptedException ex) {
                 Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
         }
+        */
     }
 
-    private void sendNumbers(String pacote) {
+    /*private void sendNumbers(String pacote) {
         out.println("/send " + pacote);
+    }*/
+    
+    private void tratarRecebimento(String pacote){
+        String[] dados = pacote.split("-");
+        for (String dado : dados) {
+            String[] params = dado.split(":");
+            String resultado;
+            if(params.length == 2)
+                resultado = "Pontos no circulo: "+params[0]+" - Pi: "+params[1];
+            else
+                resultado = params[0];
+            displayMsg(resultado, SERVIDOR);
+        }
+        
     }
 
     private void displayMsg(String msg, int flag) {

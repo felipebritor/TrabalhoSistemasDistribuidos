@@ -73,7 +73,7 @@ public class Servidor {
         boolean keep = true;
         
         //testa conexão
-        System.out.println(cmd);
+        //System.out.println(cmd);
         if(cmd.startsWith(SEND)){
             delegarTrabalho(cmd);
         }
@@ -89,6 +89,7 @@ public class Servidor {
     }
     
     private void delegarTrabalho(String numbersString){
+        //System.out.println(numbersString);
         Ponto[] pontos = quebrarString(numbersString);
         totalPontos = pontos.length;
         
@@ -134,7 +135,9 @@ public class Servidor {
         for (Executor ex : exs) {
             tp += ex.getPontosNoCirculo();
         }
-        System.out.println("TotalPontos: "+tp);
+        double pi = 4*tp/totalPontos;
+        out.println(tp+":"+pi);
+        System.out.println("TotalPontos: "+tp+" - Pi: "+pi);
     }
     
     private Ponto[] quebrarString (String numbersString){
