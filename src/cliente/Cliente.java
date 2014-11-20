@@ -24,12 +24,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import thread.Buffer;
 import thread.GeradorNumeros;
-import thread.Monitor;
 import thread.Secretaria;
 
 /**
  *
  * @author felipe, francis & vitor
+ * 
+ * Forma de uso: /send vezes quantidadeDePontos
+ * Ex.: /send 4 100000
+ * 
  */
 public class Cliente {
 
@@ -99,7 +102,7 @@ public class Cliente {
     }
 
     private void gerenciadorDeEnvio(int vezes, int pares) {
-        Monitor mm = new Monitor();
+        
         Buffer buffer = new Buffer();
         buffer.setVezes(vezes);
         GeradorNumeros gn = new GeradorNumeros(buffer, pares);
@@ -120,26 +123,7 @@ public class Cliente {
         
         
         tratarRecebimento(sec.getRecebido());
-        /*
-        while(true){
-            if(vezes == 0) break;
-            System.out.println("Vezes: "+vezes);
-            try {
-                thGerador.join();
-                //sendNumbers(gn.getPacote());
-                sec.setPacote(gn.getPacote());
-                thSec.run();
-                vezes--;
-                thGerador.run();
-                thSec.join();
-                System.out.println(sec.getRecebido());
-                tratarRecebimento(sec.getRecebido());
-                
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        */
+        
     }
 
     /*private void sendNumbers(String pacote) {

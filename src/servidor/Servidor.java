@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import thread.Executor;
-import thread.Monitor;
 
 
 /**
@@ -37,7 +36,6 @@ public class Servidor {
     int totalProcessors;
     
     
-    Monitor monitor;
     Executor[] exs;
     Thread[] threads;
     
@@ -97,7 +95,6 @@ public class Servidor {
         Ponto[] pontosPorThreads;
         // dividir os pontos pelas threads
         
-        monitor = new Monitor();
         exs = new Executor[totalProcessors];
         threads = new Thread[totalProcessors];
         
@@ -115,7 +112,7 @@ public class Servidor {
                 }
             }
             
-            Executor ex = new Executor(i,pontosPorThreads,monitor);
+            Executor ex = new Executor(i,pontosPorThreads);
             exs[i] = ex;
             Thread th = new Thread(exs[i]);
             threads[i] = th;
@@ -131,11 +128,11 @@ public class Servidor {
         } catch (InterruptedException ex) {
                 Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        double tp = 0.0;
+        int tp = 0;
         for (Executor ex : exs) {
             tp += ex.getPontosNoCirculo();
         }
-        double pi = 4*tp/totalPontos;
+        double pi = (double) 4*tp/totalPontos;
         out.println(tp+":"+pi);
         System.out.println("TotalPontos: "+tp+" - Pi: "+pi);
     }

@@ -9,16 +9,15 @@ import servidor.Ponto;
 
 public class Executor implements Runnable{
 
-    private Monitor mm;
     private int id;
     private int pontosNoCirculo;
     private int pontosNoTotal;
     private Ponto[] pontos;
     
-    public Executor(int id, Ponto[] pontos, Monitor monitor){
+    public Executor(int id, Ponto[] pontos){
         this.id = id;
         this.pontos = pontos;
-        this.mm = monitor;
+        
         pontosNoCirculo = 0;
         pontosNoTotal = 0;
     }
